@@ -1,5 +1,5 @@
 # Bowling Score Calculator: Unit Testing with JUnit 5 and JaCoCo
-### Specialized Tool Exploration and Program Unit/API Testing: project report and implementation guide
+### Specialized Tool Exploration and Program Unit Testing: implementation guide and report
 
 | | |
 |---|---|
