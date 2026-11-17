@@ -16,10 +16,10 @@
 
 ## Contents
 
-1. [Objective](#1-objective-and-overview) · 2. [System under test](#2-system-under-test) · 3. [Tool setup](#3-tool-setup)
-4. [Implementation steps](#4-implementation-steps) · 5. [Test design](#5-test-design) · 6. [Execution results](#6-execution-results)
-7. [Coverage results](#7-coverage-results) · 8. [Experiments](#8-experiments) · 9. [Discussion](#9-discussion) · 10. [Conclusion](#10-conclusion)
-11. [Troubleshooting](#11-troubleshooting) · 12. [References](#12-references)
+ [Objective](#1-objective-and-overview) · [System under test](#2-system-under-test) ·  [Tool setup](#3-tool-setup)
+ [Implementation steps](#4-implementation-steps) · [Test design](#5-test-design) · [Execution results](#6-execution-results)
+[Coverage results](#7-coverage-results) · [Experiments](#8-experiments) ·  [Discussion](#9-discussion) · [Conclusion](#10-conclusion)
+ [Troubleshooting](#11-troubleshooting) ·  [References](#12-references)
 
 ---
 
