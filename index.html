@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bowling Score + JaCoCo</title>
+<meta name="description" content="Unit testing a ten-pin bowling scorer with JUnit 5 and measuring it with JaCoCo: 100% line, branch and instruction coverage.">
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --text: #18202b;
+    --muted: #5b6676;
+    --border: #dfe3ea;
+    --accent: #1b7f4b;
+    --accent-soft: #e3f4ea;
+    --link: #0b5cd5;
+    --code-bg: #eef1f5;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 14px rgba(16, 24, 40, .05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1419;
+      --surface: #171e26;
+      --text: #e8edf3;
+      --muted: #93a0b1;
+      --border: #28323e;
+      --accent: #4cc38a;
+      --accent-soft: #14301f;
+      --link: #6ea8ff;
+      --code-bg: #1e2732;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  a { color: var(--link); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); }
+  header .wrap { padding-top: 40px; padding-bottom: 32px; }
+  .eyebrow { margin: 0 0 6px; color: var(--accent); font-weight: 600; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; }
+  h1 { margin: 0 0 10px; font-size: clamp(1.7rem, 4.5vw, 2.5rem); line-height: 1.15; }
+  .lead { margin: 0 0 18px; color: var(--muted); max-width: 70ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 22px; padding: 0; list-style: none; font-size: .93rem; color: var(--muted); }
+  .meta strong { color: var(--text); font-weight: 600; }
+
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    display: inline-block; padding: 10px 18px; border-radius: 8px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--border); color: var(--text); background: var(--surface);
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  @media (prefers-color-scheme: dark) { .btn.primary { color: #06210f; } }
+  .btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+
+  nav { position: sticky; top: 0; z-index: 5; background: var(--surface); border-bottom: 1px solid var(--border); }
+  nav .wrap { display: flex; gap: 4px 18px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; white-space: nowrap; }
+  nav a { text-decoration: none; color: var(--muted); font-size: .92rem; font-weight: 500; }
+  nav a:hover { color: var(--text); }
+
+  main section { padding: 36px 0 4px; }
+  h2 { margin: 0 0 6px; font-size: 1.5rem; }
+  .sub { margin: 0 0 18px; color: var(--muted); }
+  p { margin: 0 0 14px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0 0 8px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+  .card .num { font-size: 2rem; font-weight: 700; line-height: 1.1; color: var(--accent); }
+  .card .lbl { font-weight: 600; margin-top: 4px; }
+  .card .det { color: var(--muted); font-size: .88rem; }
+  .bar { height: 6px; border-radius: 3px; background: var(--code-bg); margin-top: 10px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; box-shadow: var(--shadow); }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--code-bg); }
+  tr:last-child td { border-bottom: 0; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  code { font: .88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--code-bg); padding: 1px 6px; border-radius: 5px; }
+  .ok { color: var(--accent); font-weight: 700; }
+  .tag { display: inline-block; padding: 1px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: .82rem; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .steps { counter-reset: s; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; padding: 0; margin: 0; list-style: none; }
+  .steps li { counter-increment: s; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: .85rem; margin-bottom: 6px; }
+  @media (prefers-color-scheme: dark) { .steps li::before { color: #06210f; } }
+  .steps b { display: block; }
+  .steps span { color: var(--muted); font-size: .9rem; }
+
+  figure { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: var(--shadow); }
+  figure img { display: block; width: 100%; height: auto; border-radius: 6px; }
+  figcaption { color: var(--muted); font-size: .88rem; padding: 8px 4px 2px; }
+  .shots { display: grid; gap: 14px; }
+
+  details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 16px; margin-bottom: 10px; }
+  summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+  details > :not(summary) { margin-bottom: 14px; }
+
+  .note { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+
+  footer { margin-top: 48px; padding: 24px 0 40px; border-top: 1px solid var(--border); color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Software Testing and Quality Assurance Lab</p>
+    <h1>Bowling Score Calculator: unit testing with JUnit 5 and JaCoCo</h1>
+    <p class="lead">A ten-pin bowling scoring class tested with 31 JUnit 5 test executions and measured with JaCoCo, the industry-standard Java code-coverage tool, in Maven, Eclipse and GitHub Actions.</p>
+    <ul class="meta">
+      <li><strong>Team:</strong> Mohammed Anas (20241ISE0025), Amit Suresh (20241ISE0019)</li>
+      <li><strong>Tools:</strong> Java, JUnit 5.10.2, JaCoCo 0.8.12, Maven</li>
+    </ul>
+    <div class="btns">
+      <a class="btn primary" href="coverage/index.html">Open the full JaCoCo report</a>
+      <a class="btn" href="https://github.com/mohammedanas007/bowling">GitHub repository</a>
+      <a class="btn" href="https://github.com/mohammedanas007/bowling/actions">CI runs</a>
+    </div>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <div class="wrap">
+    <a href="#coverage">Coverage</a>
+    <a href="#methods">By method</a>
+    <a href="#tests">Tests</a>
+    <a href="#defects">Seeded bugs</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#screens">Screenshots</a>
+    <a href="#takeaways">Takeaways</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="coverage">
+    <h2>Coverage at a glance</h2>
+    <p class="sub">Every counter JaCoCo reports is at 100%. The coverage gate required only 90% of lines and 85% of branches.</p>
+    <div class="cards">
+      <div class="card"><div class="num">100%</div><div class="lbl">Instructions</div><div class="det">307 of 307</div><div class="bar"><i style="width:100%"></i></div></div>
+      <div class="card"><div class="num">100%</div><div class="lbl">Branches</div><div class="det">38 of 38</div><div class="bar"><i style="width:100%"></i></div></div>
+      <div class="card"><div class="num">100%</div><div class="lbl">Lines</div><div class="det">57 of 57</div><div class="bar"><i style="width:100%"></i></div></div>
+      <div class="card"><div class="num">100%</div><div class="lbl">Complexity</div><div class="det">23 of 23</div><div class="bar"><i style="width:100%"></i></div></div>
+      <div class="card"><div class="num">100%</div><div class="lbl">Methods</div><div class="det">4 of 4</div><div class="bar"><i style="width:100%"></i></div></div>
+      <div class="card"><div class="num">31</div><div class="lbl">Test executions</div><div class="det">26 test methods, 0 failed</div></div>
+    </div>
+    <p><a href="coverage/index.html">Browse the interactive JaCoCo report</a>, including the green, yellow and red source view of <code>BowlingGame.java</code>.</p>
+  </section>
+
+  <section id="methods">
+    <h2>Coverage by method</h2>
+    <p class="sub"><code>roll(int)</code> carries about 70% of the class complexity and is fully covered.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Method</th><th class="n">Complexity</th><th class="n">Lines</th><th class="n">Instructions</th><th class="n">Branches</th></tr></thead>
+        <tbody>
+          <tr><td><code>roll(int)</code></td><td class="n">16</td><td class="n">34</td><td class="n ok">100%</td><td class="n ok">100%</td></tr>
+          <tr><td><code>score()</code></td><td class="n">5</td><td class="n">14</td><td class="n ok">100%</td><td class="n ok">100%</td></tr>
+          <tr><td><code>BowlingGame()</code></td><td class="n">1</td><td class="n">8</td><td class="n ok">100%</td><td class="n">n/a</td></tr>
+          <tr><td><code>isComplete()</code></td><td class="n">1</td><td class="n">1</td><td class="n ok">100%</td><td class="n">n/a</td></tr>
+          <tr><td><strong>Total</strong></td><td class="n"><strong>23</strong></td><td class="n"><strong>57</strong></td><td class="n ok">100%</td><td class="n ok">100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tests">
+    <h2>Test design</h2>
+    <p class="sub">System under test: <code>BowlingGame</code> with strikes, spares, 10th-frame fill balls and input validation.</p>
+    <div class="grid2">
+      <div class="panel"><span class="tag">Functional</span>
+        <p style="margin-top:10px"><strong>9 tests</strong> (F-01 to F-09): gutter game, all ones, spare and strike bonuses, all spares (150), perfect game (300), a mixed game (167).</p></div>
+      <div class="panel"><span class="tag">Boundary</span>
+        <p style="margin-top:10px"><strong>9 tests, 10 runs</strong> (B-01 to B-09): 0 and 10 pins, 10th-frame strike, spare and open frames, game-complete edges.</p></div>
+      <div class="panel"><span class="tag">Error and edge</span>
+        <p style="margin-top:10px"><strong>8 tests, 12 runs</strong> (E-01 to E-08): -1, 11 and extreme pin counts, frame totals over 10, rolling after the game, scoring too early.</p></div>
+    </div>
+    <p style="margin-top:14px">Techniques: equivalence partitioning, boundary-value analysis, error guessing and state-based testing. The suite makes 33 assertion calls (about 38 executed at run time).</p>
+  </section>
+
+  <section id="defects">
+    <h2>Seeded-defect experiment</h2>
+    <p class="sub">Five bugs were injected one at a time. Each was caught by at least four tests.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>ID</th><th>Injected bug</th><th class="n">Tests failing</th><th>Detected</th></tr></thead>
+        <tbody>
+          <tr><td>D1</td><td><code>pins &gt; 10</code> changed to <code>pins &gt;= 10</code></td><td class="n">10</td><td class="ok">Yes</td></tr>
+          <tr><td>D2</td><td>Spare bonus dropped in <code>score()</code></td><td class="n">4</td><td class="ok">Yes</td></tr>
+          <tr><td>D3</td><td>10th frame never grants fill balls</td><td class="n">10</td><td class="ok">Yes</td></tr>
+          <tr><td>D4</td><td>Frames 1-9: total <code>&gt;= 10</code> rejected</td><td class="n">4</td><td class="ok">Yes</td></tr>
+          <tr><td>D5</td><td>10th-frame <code>first != 10</code> guard removed</td><td class="n">6</td><td class="ok">Yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px;color:var(--muted);font-size:.9rem">Results from replaying the 31 test scenarios against each mutated copy. Coverage stays at 100% for D2 and D4 because the same lines still run, so only the assertions notice the bug.</p>
+  </section>
+
+  <section id="pipeline">
+    <h2>How it runs</h2>
+    <p class="sub">Every push to GitHub rebuilds and republishes this page.</p>
+    <ol class="steps">
+      <li><b>Push</b><span>Commit from Eclipse to GitHub.</span></li>
+      <li><b>Test</b><span><code>mvn clean verify</code> runs the JUnit 5 suite with the JaCoCo agent.</span></li>
+      <li><b>Gate</b><span>The build fails below 90% line or 85% branch coverage.</span></li>
+      <li><b>Report</b><span>JaCoCo writes the HTML report under <code>coverage/</code>.</span></li>
+      <li><b>Deploy</b><span>GitHub Pages publishes this site.</span></li>
+    </ol>
+  </section>
+
+  <section id="screens">
+    <h2>JaCoCo screenshots</h2>
+    <p class="sub">Captured from the generated report. Click an image to enlarge.</p>
+    <div class="shots">
+      <figure><a href="docs/coverage-1-overall.png" target="_blank" rel="noopener"><img src="docs/coverage-1-overall.png" alt="JaCoCo bundle summary showing 100% instruction and branch coverage" loading="lazy" onerror="this.closest('figure').hidden=true"></a><figcaption>Bundle summary: 0 of 307 instructions and 0 of 38 branches missed.</figcaption></figure>
+      <figure><a href="docs/coverage-2-package.png" target="_blank" rel="noopener"><img src="docs/coverage-2-package.png" alt="JaCoCo package view for com.example.bowling" loading="lazy" onerror="this.closest('figure').hidden=true"></a><figcaption>Package <code>com.example.bowling</code>.</figcaption></figure>
+      <figure><a href="docs/coverage-3-class.png" target="_blank" rel="noopener"><img src="docs/coverage-3-class.png" alt="JaCoCo class view of BowlingGame listing roll, score, constructor and isComplete" loading="lazy" onerror="this.closest('figure').hidden=true"></a><figcaption>Class <code>BowlingGame</code> by method.</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="takeaways">
+    <h2>Takeaways</h2>
+    <div class="note">
+      <p style="margin:0"><strong>100% coverage is not the same as correct code.</strong> JaCoCo shows what ran, not whether the assertions checked the right result. A test with no assertions can execute the same lines and catch nothing, which is why the seeded-defect experiment matters.</p>
+    </div>
+    <details open>
+      <summary>What JaCoCo measured well</summary>
+      <p>No source changes were needed, the report appears in seconds as part of <code>mvn verify</code>, and branch-level detail made it easy to see that all 38 decision outcomes are exercised.</p>
+    </details>
+    <details>
+      <summary>Limits to keep in mind</summary>
+      <p>It does not measure requirement coverage or test-data quality, and branch coverage counts decision outcomes rather than condition combinations. Mutation testing (for example PIT) is the natural next step.</p>
+    </details>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Coverage data generated by JaCoCo 0.8.12 on every build.</span>
+    <span><a href="coverage/index.html">JaCoCo report</a> · <a href="https://github.com/mohammedanas007/bowling">Source code</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
